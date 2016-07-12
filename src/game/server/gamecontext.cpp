@@ -1,4 +1,4 @@
-/* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
+// /* (c) Magnus Auvinen. See licence.txt in the root of the distribution for more information. */
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <new>
 #include <base/math.h>
@@ -12,7 +12,7 @@
 #include "gamemodes/dm.h"
 #include "gamemodes/tdm.h"
 #include "gamemodes/ctf.h"
-#include "gamemodes/mod.h"
+#include "gamemodes/collect.h"
 
 enum
 {
@@ -1493,14 +1493,14 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	//players = new CPlayer[MAX_CLIENTS];
 
 	// select gametype
-	if(str_comp(g_Config.m_SvGametype, "mod") == 0)
-		m_pController = new CGameControllerMOD(this);
-	else if(str_comp(g_Config.m_SvGametype, "ctf") == 0)
-		m_pController = new CGameControllerCTF(this);
-	else if(str_comp(g_Config.m_SvGametype, "tdm") == 0)
-		m_pController = new CGameControllerTDM(this);
+	if(str_comp(g_Config.m_SvGametype, "collect") == 0)
+		m_pController = new CGameControllerCOLLECT(this);
+// 	else if(str_comp(g_Config.m_SvGametype, "ctf") == 0)
+// 		m_pController = new CGameControllerCTF(this);
+// 	else if(str_comp(g_Config.m_SvGametype, "tdm") == 0)
+// 		m_pController = new CGameControllerTDM(this);
 	else
-		m_pController = new CGameControllerDM(this);
+		m_pController = new CGameControllerCOLLECT(this);
 
 	// setup core world
 	//for(int i = 0; i < MAX_CLIENTS; i++)

@@ -751,27 +751,15 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 
 	if(Dmg)
 	{
-		if(m_Armor)
-		{
-			if(Dmg > 1)
-			{
-				m_Health--;
-				Dmg--;
-			}
-
-			if(Dmg > m_Armor)
-			{
-				Dmg -= m_Armor;
-				m_Armor = 0;
-			}
-			else
-			{
-				m_Armor -= Dmg;
-				Dmg = 0;
-			}
+		if(Dmg > m_pPlayer->m_Score){
+			Dmg = m_pPlayer->m_Score;
+			m_pPlayer->m_Score -= Dmg;
+			Die(From, Weapon);
 		}
-
-		m_Health -= Dmg;
+		else
+			m_pPlayer->m_Score -= Dmg;
+		if(From != m_pPlayer->GetCID())
+			GameServer()->m_apPlayers[From]->m_Score += Dmg;
 	}
 
 	m_DamageTakenTick = Server()->Tick();
@@ -789,23 +777,23 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 	}
 
 	// check for death
-	if(m_Health <= 0)
-	{
-		Die(From, Weapon);
-
-		// set attacker's face to happy (taunt!)
-		if (From >= 0 && From != m_pPlayer->GetCID() && GameServer()->m_apPlayers[From])
-		{
-			CCharacter *pChr = GameServer()->m_apPlayers[From]->GetCharacter();
-			if (pChr)
-			{
-				pChr->m_EmoteType = EMOTE_HAPPY;
-				pChr->m_EmoteStop = Server()->Tick() + Server()->TickSpeed();
-			}
-		}
-
-		return false;
-	}
+// 	if(m_pPlayer->m_Score <= 0)
+// 	{
+// 		Die(From, Weapon);
+// 
+// 		// set attacker's face to happy (taunt!)
+// 		if (From >= 0 && From != m_pPlayer->GetCID() && GameServer()->m_apPlayers[From])
+// 		{
+// 			CCharacter *pChr = GameServer()->m_apPlayers[From]->GetCharacter();
+// 			if (pChr)
+// 			{
+// 				pChr->m_EmoteType = EMOTE_HAPPY;
+// 				pChr->m_EmoteStop = Server()->Tick() + Server()->TickSpeed();
+// 			}
+// 		}
+// 
+// 		return false;
+// 	}
 
 	if (Dmg > 2)
 		GameServer()->CreateSound(m_Pos, SOUND_PLAYER_PAIN_LONG);

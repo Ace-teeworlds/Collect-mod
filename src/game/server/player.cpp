@@ -21,6 +21,7 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_SpectatorID = SPEC_FREEVIEW;
 	m_LastActionTick = Server()->Tick();
 	m_TeamChangeTick = Server()->Tick();
+	m_DecreaseTick = Server()->Tick()+ 1;
 }
 
 CPlayer::~CPlayer()
@@ -79,9 +80,18 @@ void CPlayer::Tick()
 				delete m_pCharacter;
 				m_pCharacter = 0;
 			}
+			if(m_DecreaseTick <= Server()->Tick())
+			{
+				if(m_Score > 0)
+				{
+					m_DecreaseTick = Server()->Tick() + (50*Server()->TickSpeed())/(m_Score);
+					m_Score--;
+				}
+			}
 		}
 		else if(m_Spawning && m_RespawnTick <= Server()->Tick())
 			TryRespawn();
+		
 	}
 	else
 	{
@@ -90,7 +100,9 @@ void CPlayer::Tick()
 		++m_ScoreStartTick;
 		++m_LastActionTick;
 		++m_TeamChangeTick;
+		++m_DecreaseTick;
  	}
+ 	
 }
 
 void CPlayer::PostTick()

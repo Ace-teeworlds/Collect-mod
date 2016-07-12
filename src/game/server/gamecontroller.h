@@ -130,6 +130,8 @@ public:
 
 	//
 	virtual bool CanSpawn(int Team, vec2 *pPos);
+	
+	virtual void GenerateFood();
 
 	/*
 
