@@ -1518,7 +1518,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	num_spawn_points[1] = 0;
 	num_spawn_points[2] = 0;
 	*/
-
+	int Airtiles = 0;
 	for(int y = 0; y < pTileMap->m_Height; y++)
 	{
 		for(int x = 0; x < pTileMap->m_Width; x++)
@@ -1529,6 +1529,12 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 			{
 				vec2 Pos(x*32.0f+16.0f, y*32.0f+16.0f);
 				m_pController->OnEntity(Index-ENTITY_OFFSET, Pos);
+			}
+			else if(Index == 0)
+			{
+				Airtiles++;
+				if(Airtiles % g_Config.m_SvFoodSpread == 0)
+					m_pController->GenerateFood();
 			}
 		}
 	}

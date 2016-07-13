@@ -568,12 +568,16 @@ void CCharacter::Tick()
 		GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
 		GameLayerClipped(m_Pos))
 	{
+		m_pPlayer->m_Score = 0;
 		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 	}
 
 	// handle Weapons
 	HandleWeapons();
-
+	
+	if(m_pPlayer->m_Score > 20){m_Health = 10; m_Armor = 10;}
+	else if(m_pPlayer->m_Score > 10){m_Health = 10; m_Armor = m_pPlayer->m_Score - 10;}
+	else if(m_pPlayer->m_Score < 10){m_Health = m_pPlayer->m_Score; m_Armor = 0;}
 	// Previnput
 	m_PrevInput = m_Input;
 	return;

@@ -2,6 +2,7 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <game/generated/protocol.h>
 #include <game/server/gamecontext.h>
+#include <engine/shared/config.h>
 #include "food.h"
 
 CFood::CFood(CGameWorld *pGameWorld, vec2 Pos)
@@ -9,7 +10,7 @@ CFood::CFood(CGameWorld *pGameWorld, vec2 Pos)
 {
 	m_Pos = Pos;
 	GameWorld()->InsertEntity(this);
-	m_lifetime = Server()->TickSpeed()*20;
+	m_lifetime = Server()->TickSpeed()*g_Config.m_SvFoodExpiration;
 }
 
 
@@ -18,13 +19,15 @@ bool CFood::OnCharacter()
 	CCharacter *pHit = GameServer()->m_World.ClosestCharacter(m_Pos, 32.0, this);
 	if(!pHit)
 		return false;
-	pHit->GetPlayer()->m_Score+= 1;
+	pHit->GetPlayer()->m_Score+= g_Config.m_SvFoodCalories;
+	GameServer()->CreateSound(m_Pos, SOUND_PICKUP_HEALTH);
 	return true;
 }
 
 
 void CFood::Reset()
 {
+	GameServer()->m_pController->GenerateFood();
 	GameServer()->m_World.DestroyEntity(this);
 }
 

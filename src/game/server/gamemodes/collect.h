@@ -14,5 +14,7 @@ public:
         virtual bool OnEntity(int Index, vec2 Pos);
 	virtual void GenerateFood();
 	// add more virtual functions here if you wish
+private:
+	int m_Airtiles;
 };
 #endif

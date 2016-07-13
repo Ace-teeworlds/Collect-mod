@@ -11,6 +11,7 @@ CGameControllerCOLLECT::CGameControllerCOLLECT(class CGameContext *pGameServer)
 	// Exchange this to a string that identifies your game mode.
 	// DM, TDM and CTF are reserved for teeworlds original modes.
 	m_pGameType = "AGAR";
+	m_Airtiles = 0;
 
 	//m_GameFlags = GAMEFLAG_TEAMS; // GAMEFLAG_TEAMS makes it a two-team gamemode
 }
@@ -25,7 +26,7 @@ bool CGameControllerCOLLECT::OnEntity(int Index, vec2 Pos)
 {
 	if(Index == ENTITY_ARMOR_1 || Index == ENTITY_HEALTH_1)
 	{
-		GenerateFood();
+// 		GenerateFood();
 		return false;
 	}
 	return IGameController::OnEntity(Index, Pos);
