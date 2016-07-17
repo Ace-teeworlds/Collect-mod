@@ -76,8 +76,8 @@ public:
 	int m_DieTick;
 	int m_Score;
 	int m_ScoreStartTick;
-	int m_DecreaseTick;
-	int m_Score_temp;
+	int m_DecreaseTimer;
+	float m_Score_cont;
 	bool m_ForceBalanced;
 	int m_LastActionTick;
 	int m_TeamChangeTick;

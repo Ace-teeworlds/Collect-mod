@@ -21,8 +21,8 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 	m_SpectatorID = SPEC_FREEVIEW;
 	m_LastActionTick = Server()->Tick();
 	m_TeamChangeTick = Server()->Tick();
-	m_DecreaseTick = Server()->Tick()+ 1;
-	m_Score_temp = 0;
+	m_DecreaseTimer = 0;
+	m_Score_cont = 0;
 }
 
 CPlayer::~CPlayer()
@@ -85,18 +85,25 @@ void CPlayer::Tick()
 		}
 		else if(m_Spawning && m_RespawnTick <= Server()->Tick())
 			TryRespawn();
-		if(m_Score_temp && m_Score && m_Score_temp <= m_Score) m_DecreaseTick +=  (g_Config.m_SvScoreHalflife*Server()->TickSpeed())/(m_Score) - (g_Config.m_SvScoreHalflife*Server()->TickSpeed())/(m_Score_temp);
-		if(m_DecreaseTick <= Server()->Tick())
+		
+		// Handle Decay
+		if(m_Score && m_DecreaseTimer > (Server()->TickSpeed()*g_Config.m_SvScoreHalflife)/m_Score)
 		{
-			if(m_Score > 0)
+			m_DecreaseTimer = (Server()->TickSpeed()*g_Config.m_SvScoreHalflife)/m_Score;
+		}
+		if(m_DecreaseTimer > 0)
+		{
+			m_DecreaseTimer--;
+		}
+		else
+		{
+			if(m_Score>0)
 			{
-				m_DecreaseTick = Server()->Tick() + (g_Config.m_SvScoreHalflife*Server()->TickSpeed())/(m_Score);
+				m_DecreaseTimer = (Server()->TickSpeed()*g_Config.m_SvScoreHalflife)/m_Score;
 				m_Score--;
-				if(m_pCharacter)
 				GameServer()->CreateSoundGlobal(SOUND_PICKUP_ARMOR, m_ClientID);
 			}
 		}
-		m_Score_temp = m_Score;
 	}
 	else
 	{
@@ -105,7 +112,6 @@ void CPlayer::Tick()
 		++m_ScoreStartTick;
 		++m_LastActionTick;
 		++m_TeamChangeTick;
-		++m_DecreaseTick;
  	}
  	
 }

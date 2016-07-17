@@ -13,6 +13,9 @@
 #include "gamemodes/tdm.h"
 #include "gamemodes/ctf.h"
 #include "gamemodes/collect.h"
+#include "gamemodes/tcollect.h"
+
+#include <string.h>
 
 enum
 {
@@ -229,6 +232,7 @@ void CGameContext::SendChatTarget(int To, const char *pText)
 
 void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText)
 {
+
 	char aBuf[256];
 	if(ChatterClientID >= 0 && ChatterClientID < MAX_CLIENTS)
 		str_format(aBuf, sizeof(aBuf), "%d:%d:%s: %s", ChatterClientID, Team, Server()->ClientName(ChatterClientID), pText);
@@ -260,6 +264,15 @@ void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText)
 			if(m_apPlayers[i] && m_apPlayers[i]->GetTeam() == Team)
 				Server()->SendPackMsg(&Msg, MSGFLAG_VITAL|MSGFLAG_NORECORD, i);
 		}
+	}
+	if(strcmp ( pText, "/info") == 0 ||strcmp ( pText, "/about") == 0 ||strcmp ( pText, "/?") == 0 ||strcmp ( pText, "/cmd") == 0 ||
+	strcmp ( pText, "/cmdlist") == 0 ||strcmp ( pText, "/help") == 0)
+	{
+		SendChat(-1, CGameContext::CHAT_ALL, "Mod-Description:");
+		SendChat(-1, CGameContext::CHAT_ALL, "- Your score is also your health");
+		SendChat(-1, CGameContext::CHAT_ALL, "- You can increase your score by gathering food,");
+		SendChat(-1, CGameContext::CHAT_ALL, "  and by hunting other players (1 point per damage)");
+		SendChat(-1, CGameContext::CHAT_ALL, "- The higher your score is, the faster it decreases");
 	}
 }
 
@@ -541,7 +554,13 @@ void CGameContext::OnClientEnter(int ClientID)
 
 	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d", ClientID, Server()->ClientName(ClientID), m_apPlayers[ClientID]->GetTeam());
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
-
+	
+	SendChat(-1, CGameContext::CHAT_ALL, "Mod-Description:");
+	SendChat(-1, CGameContext::CHAT_ALL, "- Your score is also your health");
+	SendChat(-1, CGameContext::CHAT_ALL, "- You can increase your score by gathering food,");
+	SendChat(-1, CGameContext::CHAT_ALL, "  and by hunting other players");
+	SendChat(-1, CGameContext::CHAT_ALL, "- The higher your score is, the faster it decreases");
+	
 	m_VoteUpdate = true;
 }
 
@@ -1493,12 +1512,10 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	//players = new CPlayer[MAX_CLIENTS];
 
 	// select gametype
-	if(str_comp(g_Config.m_SvGametype, "collect") == 0)
+	if(str_comp(g_Config.m_SvGametype, "agar") == 0)
 		m_pController = new CGameControllerCOLLECT(this);
-// 	else if(str_comp(g_Config.m_SvGametype, "ctf") == 0)
-// 		m_pController = new CGameControllerCTF(this);
-// 	else if(str_comp(g_Config.m_SvGametype, "tdm") == 0)
-// 		m_pController = new CGameControllerTDM(this);
+	else if(str_comp(g_Config.m_SvGametype, "tagar") == 0)
+		m_pController = new CGameControllerTCOLLECT(this);
 	else
 		m_pController = new CGameControllerCOLLECT(this);
 
@@ -1534,7 +1551,10 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 			{
 				Airtiles++;
 				if(Airtiles % g_Config.m_SvFoodSpread == 0)
+				{
 					m_pController->GenerateFood();
+					m_pController->m_Total++;
+				}
 			}
 		}
 	}

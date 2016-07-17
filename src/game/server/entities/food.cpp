@@ -27,7 +27,6 @@ bool CFood::OnCharacter()
 
 void CFood::Reset()
 {
-	GameServer()->m_pController->GenerateFood();
 	GameServer()->m_World.DestroyEntity(this);
 }
 
@@ -35,12 +34,13 @@ void CFood::Tick()
 {
 	if(OnCharacter())
 	{
-		GameServer()->m_pController->GenerateFood();
+		GameServer()->m_pController->m_Amount--;
 		GameServer()->m_World.DestroyEntity(this);
 	}
 	if(m_lifetime == 0)
 	{
 		GameServer()->m_pController->GenerateFood();
+		GameServer()->m_pController->m_Amount--;
 		GameServer()->m_World.DestroyEntity(this);
 	}
 	else

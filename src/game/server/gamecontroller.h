@@ -144,6 +144,9 @@ public:
 	int ClampTeam(int Team);
 
 	virtual void PostReset();
+
+	int m_Amount;
+	int m_Total;
 };
 
 #endif

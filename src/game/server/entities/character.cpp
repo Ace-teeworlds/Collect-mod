@@ -568,7 +568,6 @@ void CCharacter::Tick()
 		GameServer()->Collision()->GetCollisionAt(m_Pos.x-m_ProximityRadius/3.f, m_Pos.y+m_ProximityRadius/3.f)&CCollision::COLFLAG_DEATH ||
 		GameLayerClipped(m_Pos))
 	{
-		m_pPlayer->m_Score = 0;
 		Die(m_pPlayer->GetCID(), WEAPON_WORLD);
 	}
 
@@ -576,8 +575,8 @@ void CCharacter::Tick()
 	HandleWeapons();
 	
 	if(m_pPlayer->m_Score > 20){m_Health = 10; m_Armor = 10;}
-	else if(m_pPlayer->m_Score > 10){m_Health = 10; m_Armor = m_pPlayer->m_Score - 10;}
-	else if(m_pPlayer->m_Score < 10){m_Health = m_pPlayer->m_Score; m_Armor = 0;}
+	else if(m_pPlayer->m_Score >= 10){m_Health = 10; m_Armor = m_pPlayer->m_Score - 10;}
+	else if(m_pPlayer->m_Score <= 10){m_Health = m_pPlayer->m_Score; m_Armor = 0;}
 	// Previnput
 	m_PrevInput = m_Input;
 	return;
@@ -699,6 +698,7 @@ bool CCharacter::IncreaseArmor(int Amount)
 void CCharacter::Die(int Killer, int Weapon)
 {
 	// we got to wait 0.5 secs before respawning
+	m_pPlayer->m_Score = 0;
 	m_pPlayer->m_RespawnTick = Server()->Tick()+Server()->TickSpeed()/2;
 	int ModeSpecial = GameServer()->m_pController->OnCharacterDeath(this, GameServer()->m_apPlayers[Killer], Weapon);
 
@@ -737,7 +737,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 
 	// m_pPlayer only inflicts half damage on self
 	if(From == m_pPlayer->GetCID())
-		Dmg = max(1, Dmg/2);
+		Dmg = 0;
 
 	m_DamageTaken++;
 
@@ -759,6 +759,7 @@ bool CCharacter::TakeDamage(vec2 Force, int Dmg, int From, int Weapon)
 			Dmg = m_pPlayer->m_Score;
 			m_pPlayer->m_Score -= Dmg;
 			Die(From, Weapon);
+			return false;
 		}
 		else
 			m_pPlayer->m_Score -= Dmg;
