@@ -86,7 +86,7 @@ MACRO_CONFIG_INT(SvVoteKickBantime, sv_vote_kick_bantime, 5, 0, 1440, CFGFLAG_SE
 MACRO_CONFIG_INT(SvFoodSpread, sv_food_spread, 75 , 1 , 10000, CFGFLAG_SERVER, "Average area per food (higher means less food)(default 75)")
 MACRO_CONFIG_INT(SvFoodExpiration, sv_food_expiration, 20 , 0 , 300, CFGFLAG_SERVER, "Time until the food disappears in seconds. 0 = infinity (default 20)")
 MACRO_CONFIG_INT(SvFoodCalories, sv_food_calories, 1 , 1 , 100, CFGFLAG_SERVER, "Points that each dot gives (default 1)")
-MACRO_CONFIG_INT(SvFoodDrain, sv_food_drain, 1 , 0 , 1, CFGFLAG_SERVER, "Total Food stays constant vs. Total Food + Score stays constant")
+MACRO_CONFIG_INT(SvFoodDrain, sv_food_drain, 0 , 0 , 1, CFGFLAG_SERVER, "Total Food stays constant vs. Total Food + Score stays constant")
 
 MACRO_CONFIG_INT(SvScoreHalflife, sv_score_halflife, 30 , 0 , 1000, CFGFLAG_SERVER, "Halflife time of the score. 0 disables. (default 30)")
 

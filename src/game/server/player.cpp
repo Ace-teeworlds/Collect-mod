@@ -149,10 +149,18 @@ void CPlayer::Snap(int SnappingClient)
 	StrToInts(&pClientInfo->m_Clan0, 3, Server()->ClientClan(m_ClientID));
 	pClientInfo->m_Country = Server()->ClientCountry(m_ClientID);
 	StrToInts(&pClientInfo->m_Skin0, 6, m_TeeInfos.m_SkinName);
-	pClientInfo->m_UseCustomColor = m_TeeInfos.m_UseCustomColor;
-	pClientInfo->m_ColorBody = m_TeeInfos.m_ColorBody;
-	pClientInfo->m_ColorFeet = m_TeeInfos.m_ColorFeet;
-
+	pClientInfo->m_UseCustomColor = 1;
+	if(g_Config.m_SvScorelimit)
+	{
+		pClientInfo->m_ColorBody = (255 - (255*m_Score)/(g_Config.m_SvScorelimit))/3 * 0x010000 + 0x00ff40;
+		pClientInfo->m_ColorFeet = (255 - (255*m_Score)/(g_Config.m_SvScorelimit))/3 * 0x010000 + 0x00ff40;
+	}
+	else
+	{
+		pClientInfo->m_ColorBody = (255 - (255*m_Score)/(65))/3 * 0x010000 + 0x00ff40;
+		pClientInfo->m_ColorFeet = (255 - (255*m_Score)/(65))/3 * 0x010000 + 0x00ff40;
+	}
+	
 	CNetObj_PlayerInfo *pPlayerInfo = static_cast<CNetObj_PlayerInfo *>(Server()->SnapNewItem(NETOBJTYPE_PLAYERINFO, m_ClientID, sizeof(CNetObj_PlayerInfo)));
 	if(!pPlayerInfo)
 		return;

@@ -107,6 +107,7 @@ public:
 	char m_aVoteReason[VOTE_REASON_LENGTH];
 	int m_NumVoteOptions;
 	int m_VoteEnforce;
+	int m_Airtiles;
 	enum
 	{
 		VOTE_ENFORCE_UNKNOWN=0,

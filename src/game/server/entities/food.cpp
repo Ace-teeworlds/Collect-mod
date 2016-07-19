@@ -27,6 +27,7 @@ bool CFood::OnCharacter()
 
 void CFood::Reset()
 {
+	GameServer()->m_pController->m_Amount--;
 	GameServer()->m_World.DestroyEntity(this);
 }
 

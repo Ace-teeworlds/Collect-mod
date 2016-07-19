@@ -9,11 +9,7 @@
 #include <game/version.h>
 #include <game/collision.h>
 #include <game/gamecore.h>
-#include "gamemodes/dm.h"
-#include "gamemodes/tdm.h"
-#include "gamemodes/ctf.h"
 #include "gamemodes/collect.h"
-#include "gamemodes/tcollect.h"
 
 #include <string.h>
 
@@ -270,9 +266,8 @@ void CGameContext::SendChat(int ChatterClientID, int Team, const char *pText)
 	{
 		SendChat(-1, CGameContext::CHAT_ALL, "Mod-Description:");
 		SendChat(-1, CGameContext::CHAT_ALL, "- Your score is also your health");
-		SendChat(-1, CGameContext::CHAT_ALL, "- You can increase your score by gathering food,");
-		SendChat(-1, CGameContext::CHAT_ALL, "  and by hunting other players (1 point per damage)");
-		SendChat(-1, CGameContext::CHAT_ALL, "- The higher your score is, the faster it decreases");
+		SendChat(-1, CGameContext::CHAT_ALL, "- You can increase your score by gathering food and by hunting other players (1 point per damage)");
+		SendChat(-1, CGameContext::CHAT_ALL, "- The higher your score is, the faster you get hungry (score decreases)");
 	}
 }
 
@@ -555,11 +550,8 @@ void CGameContext::OnClientEnter(int ClientID)
 	str_format(aBuf, sizeof(aBuf), "team_join player='%d:%s' team=%d", ClientID, Server()->ClientName(ClientID), m_apPlayers[ClientID]->GetTeam());
 	Console()->Print(IConsole::OUTPUT_LEVEL_DEBUG, "game", aBuf);
 	
-	SendChat(-1, CGameContext::CHAT_ALL, "Mod-Description:");
-	SendChat(-1, CGameContext::CHAT_ALL, "- Your score is also your health");
-	SendChat(-1, CGameContext::CHAT_ALL, "- You can increase your score by gathering food,");
-	SendChat(-1, CGameContext::CHAT_ALL, "  and by hunting other players");
-	SendChat(-1, CGameContext::CHAT_ALL, "- The higher your score is, the faster it decreases");
+	SendChat(-1, CGameContext::CHAT_ALL, "Welcome to Hunt & Gather \n type /? for a mod description");
+
 	
 	m_VoteUpdate = true;
 }
@@ -1512,12 +1504,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	//players = new CPlayer[MAX_CLIENTS];
 
 	// select gametype
-	if(str_comp(g_Config.m_SvGametype, "agar") == 0)
-		m_pController = new CGameControllerCOLLECT(this);
-	else if(str_comp(g_Config.m_SvGametype, "tagar") == 0)
-		m_pController = new CGameControllerTCOLLECT(this);
-	else
-		m_pController = new CGameControllerCOLLECT(this);
+	m_pController = new CGameControllerCOLLECT(this);
 
 	// setup core world
 	//for(int i = 0; i < MAX_CLIENTS; i++)
@@ -1535,7 +1522,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 	num_spawn_points[1] = 0;
 	num_spawn_points[2] = 0;
 	*/
-	int Airtiles = 0;
+	m_Airtiles = 0;
 	for(int y = 0; y < pTileMap->m_Height; y++)
 	{
 		for(int x = 0; x < pTileMap->m_Width; x++)
@@ -1549,12 +1536,7 @@ void CGameContext::OnInit(/*class IKernel *pKernel*/)
 			}
 			else if(Index == 0)
 			{
-				Airtiles++;
-				if(Airtiles % g_Config.m_SvFoodSpread == 0)
-				{
-					m_pController->GenerateFood();
-					m_pController->m_Total++;
-				}
+				m_Airtiles++;
 			}
 		}
 	}
