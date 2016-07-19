@@ -16,14 +16,17 @@ CGameControllerCOLLECT::CGameControllerCOLLECT(class CGameContext *pGameServer)
 
 void CGameControllerCOLLECT::Tick()
 {
-	int totalscore = 0;
-	for(int i=0; i< MAX_CLIENTS; i++)
+	if(Server()->Tick() % Server()->TickSpeed() == 0)
 	{
-		if(GameServer()->m_apPlayers[i]) totalscore += GameServer()->m_apPlayers[i]->m_Score;
-	}
-	while(g_Config.m_SvFoodDrain*totalscore + m_Amount < GameServer()->m_Airtiles/g_Config.m_SvFoodSpread)
-	{
-		GenerateFood();
+		int totalscore = 0;
+		for(int i=0; i< MAX_CLIENTS; i++)
+		{
+			if(GameServer()->m_apPlayers[i]) totalscore += GameServer()->m_apPlayers[i]->m_Score;
+		}
+		while(g_Config.m_SvFoodDrain*totalscore + m_Amount < GameServer()->m_Airtiles/g_Config.m_SvFoodSpread)
+		{
+			GenerateFood();
+		}
 	}
 // 	if(Server()->Tick() % Server()->TickSpeed() == 0){
 // 	char aBuf[256];
